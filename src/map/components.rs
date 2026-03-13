@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy::render::mesh::Mesh;
 use rand::prelude::*;
 
 #[derive(Copy, Clone, PartialEq, Debug)] 
@@ -18,18 +19,15 @@ pub struct Map {
 }
 
 impl Map {
-    // Procura o primeiro tile de chão (Floor) disponível
-    pub fn find_first_floor(&self) -> (i32, i32) {
-        for y in 0..self.height {
-            for x in 0..self.width {
-                let idx = (y * self.width + x) as usize;
-                if self.tiles[idx] == TileType::Floor {
-                    return (x, y);
-                }
-            }
+    // Retorna true se a coordenada estiver dentro do mapa e NÃO for uma parede
+    pub fn is_passable(&self, x: i32, y: i32) -> bool {
+        if x < 0 || x >= self.width || y < 0 || y >= self.height {
+            return false; // Fora do mapa não é passável
         }
-        (1, 1) // Fallback caso o mapa esteja quebrado
+        let idx = (y * self.width + x) as usize;
+        self.tiles[idx] != TileType::Wall // Passável se NÃO for parede
     }
+
 
 
     /// Versão Nova: Labirinto de Cavernas (Drunkard's Walk)
@@ -156,19 +154,6 @@ impl Map {
             height,
         }
     }
-
-    pub fn is_passable(&self, x: i32, y: i32) -> bool {
-        // 1. Fora dos limites? Não passa.
-        if x < 0 || x >= self.width || y < 0 || y >= self.height {
-            return false;
-        }
-        
-        // 2. Calcula o índice linear
-        let idx = (y * self.width + x) as usize;
-        
-        // 3. Só passa se for Floor
-        self.tiles[idx] == TileType::Floor
-    }
 }
 
 #[derive(Component)]
@@ -199,3 +184,6 @@ impl Rect {
 pub struct MapOverlay {
     pub is_open: bool,
 }
+
+#[derive(Component)]
+pub struct FovMesh;
