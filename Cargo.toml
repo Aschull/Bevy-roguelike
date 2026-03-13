@@ -1,0 +1,8 @@
+[package]
+name = "meu_roguelike"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.13" # Versão estável atualizada para 2026
+rand = "0.10.0"
